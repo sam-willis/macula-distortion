@@ -1,0 +1,5 @@
+/.cache
+*__pycache__
+/Pipfile.lock
+/.env
+/.vscode
