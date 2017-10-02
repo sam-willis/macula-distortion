@@ -1,5 +1,6 @@
-from math import pi
-from main import convert_polar_factory
+from math import pi, sqrt
+from pytest import approx
+from main import Something
 
 
 class FakeImg:
@@ -9,5 +10,13 @@ class FakeImg:
 
 def test_convert_polar():
     img = FakeImg(10, 10)
-    convert_polar = convert_polar_factory(img)
-    assert convert_polar(0, 0) == (100, 3 * pi / 4)
+    something = Something(img)
+    r, theta = something.convert_polar(0, 0)
+    assert r == approx(sqrt(50))
+    assert theta % (2 * pi) == approx(5 * pi / 4 % (2 * pi))
+
+
+def test_build_dict():
+    img = FakeImg(10, 10)
+    something = Something(img)
+    something.build_dictionary()
