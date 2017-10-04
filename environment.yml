@@ -3,6 +3,7 @@ dependencies:
 - python=3
 - numpy
 - scipy
+- scikit-image
 - pillow
 - matplotlib
 - pylint
@@ -10,3 +11,5 @@ dependencies:
 - pytest-mock
 - jedi
 - yaml
+- pip:
+  - opencv-contrib-python

@@ -21,6 +21,10 @@ def iterp(x, y):
 
 
 def get_remap():
+    """
+    Returns a mapping of 0-45 degrees of a healthy persons visual
+    field to 0-n degrees of someone with macula degeneration
+    """
 
     with open('retinal_density_model.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -48,11 +52,13 @@ def get_remap():
     g_norm = InterpolatedUnivariateSpline(X_bar, g_norm, k=1)
     g_macl_inv = InterpolatedUnivariateSpline(g_macl, X_bar, k=1)
 
-    return X, g_macl_inv(g_norm(X))
+    #return X, g_macl_inv(g_norm(X))
+    return X, lambda X: g_macl_inv(g_norm(X))
 
 
 def main():
-    plt.plot(*get_remap())
+    X, f = get_remap()
+    plt.plot(X, f(X))
     plt.show()
 
 
