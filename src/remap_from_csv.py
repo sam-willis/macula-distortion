@@ -3,6 +3,8 @@ import numpy as np
 from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.integrate import cumtrapz as intergrate
 import matplotlib.pyplot as plt
+import pickle
+from math import atan, pi
 
 RES_STEP = 2000  # possibly should be resolution of screen i.e 2000?
 loss_function = lambda x: 1 if x > 10 else 0
@@ -21,13 +23,14 @@ def get_remap():
     Returns a mapping of 0-45 degrees of a healthy persons visual
     field to 0-n degrees of someone with macula degeneration
     """
+    with open('../textPopup/bound_1368_912.pickle', 'rb') as f:
+        r, f = pickle.load(f)
 
-    with open('retinal_density_model.csv', newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        headers = next(reader)
-        columns = zip(*reader)
-        cone_density = next_column(columns)
-        angle = to_degrees(next_column(columns))
+    cone_density = 1 / f
+    angle = to_degrees(r)
+
+    #plt.plot(angle, cone_density)
+    #plt.show()
 
     X = np.linspace(0, 45, RES_STEP)
     X_bar = [(X[i] + X[i + 1]) / 2 for i in range(len(X) - 1)]
@@ -36,7 +39,14 @@ def get_remap():
 
     f = InterpolatedUnivariateSpline(angle, cone_density, k=1)
     f_norm = f(X)
+
+    #plt.plot(X, f_norm)
+    #plt.show()
+
     f_macl = [f(x) * loss_function(x) for x in X]
+
+    #plt.plot(X, f_macl)
+    #plt.show()
 
     # g is the cumulative infomation function with angle
 
@@ -58,8 +68,9 @@ def next_column(columns):
     return [float(item) for item in next(columns) if item is not ""]
 
 
-def to_degrees(dists_in_mms):
-    return [dist * 3.5 for dist in dists_in_mms]
+def to_degrees(dists_in_px):
+    dists_in_mms = 146.5 / 1368 * dists_in_px
+    return [atan(dist / 80) * 180 / pi for dist in dists_in_mms]
 
 
 def iterp(x, y):
