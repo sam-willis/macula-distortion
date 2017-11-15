@@ -1,45 +1,36 @@
-import numpy as np
+import scipy.misc
 from scipy import ndimage
-from math import sqrt, atan2
-
-# make sensible assumptions about the size of the retina the image takes up
-# i.e. which pixels correlate to what density
-# load csv, times pixel
-# 1 - exp
-
-# intergrate function 
-# assume -45 to 45 degree arc
-# what part of the retina is that
-# 1mm ~3.5 degrees http://hubel.med.harvard.edu/book/b10.htm
-# 0-~11mm on retina (very very roughly) 
-
-
-class Something:
-    def __init__(self, img):
-        self.img = img
-        self.width, self.height, _ = img.shape
-        self.dict = {}
-
-    def build_dictionary(self):
-        for x in range(self.width):
-            for y in range(self.height):
-                self.dict[x, y] = self.convert_polar(x, y)
-
-    def convert_polar(self, x_abs, y_abs):
-        x_centred = x_abs - self.width // 2
-        y_centred = y_abs - self.height // 2
-        r = sqrt(x_centred**2 + y_centred**2)
-        theta = atan2(y_centred, x_centred)
-        return r, theta
+from create_test import create_new_test_image
+from remapper import apply_macula_distortion
+import pickler
 
 
 def main():
-    img = ndimage.imread('images/test.png')
-    Something(img)
-    import matplotlib.pyplot as plt
-    plt.imshow(img)
-    plt.axis('off')
-    plt.show()
+    face_images()
+
+
+def face_images():
+    for c in [1, 2, 3, 4]:
+        img_path = './images/face{}.jpg'.format(c)
+        img = ndimage.imread(img_path)
+        img_macl = apply_macula_distortion(img)
+        scipy.misc.imsave('./images/face{}_macl.png'.format(c), img_macl)
+
+
+def random_word_image():
+    try:
+        c = pickler.load('imgCount')
+    except FileNotFoundError:
+        c = 0
+    img_path = './images/test_{}.png'.format(c)
+    create_new_test_image(img_path)
+
+    img_path = './images/face1.png'
+    img = ndimage.imread(img_path)
+    img_macl = apply_macula_distortion(img)
+    scipy.misc.imsave('./images/test_macl_{}.png'.format(c), img_macl)
+
+    pickler.save('imgCount', c + 1)
 
 
 if __name__ == '__main__':
