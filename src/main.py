@@ -6,16 +6,17 @@ import pickler
 
 
 def main():
-    face_images()
+    random_images()
 
-
-def face_images():
-    for c in [1, 2, 3, 4]:
-        img_path = './images/face{}.jpg'.format(c)
+def random_images():
+    for c in ["me (1)","me (2)","me (3)","me (4)","me (5)","me (6)"]:
+    #for c in ["me (1)"]:
+        img_path = './images/{}.jpg'.format(c)
         img = ndimage.imread(img_path)
-        img_macl = apply_macula_distortion(img)
-        scipy.misc.imsave('./images/face{}_macl.png'.format(c), img_macl)
-
+        img_hole = apply_macula_distortion(img, fix_image = False)
+        img_macl = apply_macula_distortion(img, fix_image = True)
+        scipy.misc.imsave('./images/{}_hole.png'.format(c), img_hole)
+        scipy.misc.imsave('./images/{}_macl.png'.format(c), img_macl)
 
 def random_word_image():
     try:
